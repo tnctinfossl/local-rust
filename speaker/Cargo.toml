@@ -9,5 +9,7 @@ edition = "2018"
 [dependencies]
 protobuf = "2.8.0"
 glm = "0.2.3"
+serde = "1.0.101"
+serde_derive = "1.0.101"
 [build-dependencies]
 protoc-rust = "2.8.1"
