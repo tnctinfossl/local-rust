@@ -1,4 +1,5 @@
 mod grSim_Commands;
 mod grSim_Packet;
 mod grSim_Replacement;
-mod speaker;
+pub mod speaker;
+pub use speaker::{Operation, OperationBuilder, Settings, Speaker, Team};
