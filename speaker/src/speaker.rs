@@ -127,9 +127,9 @@ impl Speaker {
             Ipv4Addr::new(a, b, c, d)
         };
         let socket =(
-            UdpSocket::bind(&SocketAddr::from((addr, settings.port))))?;
-        //socket
-        //    .join_multicast_v4(&addr, &Ipv4Addr::new(0, 0, 0, 0))?;
+            UdpSocket::bind("localhost:0"))?;
+        socket
+            .join_multicast_v4(&addr, &Ipv4Addr::new(0, 0, 0, 0))?;
         Ok(Speaker {
             buffer: RefCell::new(Vec::new()),
             socket: socket,
