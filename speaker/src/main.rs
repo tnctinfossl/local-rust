@@ -7,7 +7,7 @@ fn main() {
     let speaker = Speaker::new(&settings).unwrap();
     println!("init speaker");
     let op = OperationBuilder::new(Team::Blue, 0)
-        .run(Vec2::new(0.0, 0.0), PI * 2.0)
+        .run(Vec2::new(0.0, 0.0), PI * 0.5)
         .finalize();
     println!("send run");
     let mut number=0;

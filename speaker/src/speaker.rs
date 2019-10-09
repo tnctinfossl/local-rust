@@ -25,7 +25,8 @@ impl Settings {
 impl Default for Settings {
     fn default() -> Settings {
         Settings {
-            ip4: [224, 5, 23, 2],
+            //ip4: [224, 5, 23, 2],
+            ip4:[127,0,0,1],
             port: 20011,
         }
     }
@@ -123,7 +124,7 @@ impl Speaker {
     pub fn new(settings: &Settings) -> io::Result<Speaker> {
         let socket = (UdpSocket::bind("localhost:0"))?;
         socket.connect(SocketAddr::from((settings.ip4,settings.port)))?;
-        socket.join_multicast_v4(&Ipv4Addr::from(settings.ip4),&Ipv4Addr::from([0,0,0,0]))?;
+        //socket.join_multicast_v4(&Ipv4Addr::from(settings.ip4),&Ipv4Addr::from([0,0,0,0]))?;
         Ok(Speaker {
             socket: socket
         })
@@ -140,9 +141,9 @@ impl Speaker {
                 items.push((|| {
                     let mut command = grSim_Robot_Command::new();
                     command.set_id(op.id);
-                    command.set_velangular(op.speed.x);
+                    command.set_veltangent(op.speed.x);
                     command.set_velnormal(op.speed.y);
-                    command.set_veltangent(op.rocation);
+                    command.set_velangular(op.rocation);
                     command.set_kickspeedx(op.kick_power);
                     command.set_kickspeedz(op.chip_power);
                     command.set_spinner(op.spin);
@@ -155,9 +156,8 @@ impl Speaker {
         })());
         let mut buffer = Vec::new();
         packet.write_to_vec(&mut buffer)?;
-        if let Err(e) = self.socket.send(&buffer) {
-            println!("{:?}", e);
-        }
+        //println!("len={}:{:?}",buffer.len(),&buffer);
+        self.socket.send(&buffer)?;
         Ok(())
     }
 }
