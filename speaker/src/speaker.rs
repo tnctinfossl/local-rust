@@ -116,39 +116,21 @@ impl OperationBuilder {
 #[derive(Debug)]
 pub struct Speaker {
     //ソケット
-    buffer: RefCell<Vec<u8>>,
     socket: UdpSocket,
-    settings: Settings,
 }
 
 impl Speaker {
     pub fn new(settings: &Settings) -> io::Result<Speaker> {
-        let addr = {
-            let [a, b, c, d] = settings.ip4;
-            Ipv4Addr::new(a, b, c, d)
-        };
         let socket = (UdpSocket::bind("localhost:0"))?;
+        socket.connect(SocketAddr::from((settings.ip4,settings.port)))?;
+        socket.join_multicast_v4(&Ipv4Addr::from(settings.ip4),&Ipv4Addr::from([0,0,0,0]))?;
         Ok(Speaker {
-            buffer: RefCell::new(Vec::new()),
-            socket: socket,
-            settings: settings.clone(),
+            socket: socket
         })
     }
     //注意:このメソッドはmulti-threadに対応していない。
     pub fn send(&self, op: &Operation) -> io::Result<()> {
-        //データを変換する
-        /*
-        let mut command = grSim_Robot_Command::new();
-        let mut commands = grSim_Commands::new();
-        commands.set_timestamp(0.0);
-        commands.set_isteamyellow(op.team == Team::Yellow);
-        commands.mut_robot_commands().push(command);
         let mut packet = grSim_Packet::new();
-        packet.set_commands(commands);
-        */
-        let mut packet = grSim_Packet::new();
-        //packet.mut_commands().set_timestamp(0.0);
-        //socket.join_multicast_v4(&addr, &Ipv4Addr::new(0, 0, 0, 0))?;
         packet.set_commands((|| {
             let mut commands = grSim_Commands::new();
             commands.set_timestamp(0.0);
@@ -171,19 +153,10 @@ impl Speaker {
             })());
             commands
         })());
-        
-        //*packet.mut_replacement()=grSim_Replacement::new();
-        //println!("fix {:?}", packet);
-        //send target
-        let mut buffer = self.buffer.borrow_mut();
+        let mut buffer = Vec::new();
         packet.write_to_vec(&mut buffer)?;
-
-        let target = {
-            let (ip4, port) = (self.settings.ip4, self.settings.port);
-            format!("{}.{}.{}.{}:{}", ip4[0], ip4[1], ip4[2], ip4[3], port)
-        };
-        if let Err(e)=self.socket.send_to(&buffer, &target){
-            println!("{:?}",e);
+        if let Err(e) = self.socket.send(&buffer) {
+            println!("{:?}", e);
         }
         Ok(())
     }
