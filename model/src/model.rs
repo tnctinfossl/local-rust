@@ -2,7 +2,7 @@ use glm::{distance, Vec2};
 use rand::Rng;
 use std::collections::HashMap;
 use std::time::{Duration, Instant};
-//use serde_derive::{Deserialize, Serialize};
+use serde_derive::{ Serialize,Deserialize};
 #[derive(Debug, Clone)]
 pub struct Robot {
     pub id: u32,
@@ -24,12 +24,7 @@ impl Robot {
             tags: HashMap::new(),
         }
     }
-    /*pub fn new_random<R: Rng + ?Sized>(rng: &mut R,id:u32,infield_width:f32,infield_hight:f32) -> Robot{
-        let x = rand::thread_rng().gen_range(0,1200);
-        let y = rand::thread_rng().gen_range(0,9000);
-        let mut robot = Robot{position:Vec2::new(0.0,0.0)};
-        robot.position =
-    }*/
+
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -40,6 +35,7 @@ pub struct Ball {
 }
 
 impl Ball {
+    #[warn(dead_code)]
     pub fn new(position: Vec2, confidence: f32) -> Ball {
         Ball {
             position: position,
@@ -113,6 +109,7 @@ pub struct Field {
     pub penalty_area_depth: f32,
 }
 impl Field {
+    #[warn(dead_code)]
     pub fn new_large() -> Field {
         Field {
             infield: Vec2::new(12000.0, 9000.0),
@@ -123,6 +120,7 @@ impl Field {
             penalty_area_depth: 1200.0,
         }
     }
+    #[warn(dead_code)]
     pub fn new_small() -> Field {
         Field {
             infield: Vec2::new(9000.0, 6000.0),
@@ -153,14 +151,14 @@ impl Field {
 }
 
 #[allow(dead_code)]
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy,Serialize,Deserialize)]
 pub enum TeamColor {
     Blue,
     Yellow,
 }
 
 #[allow(dead_code)]
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy,Serialize,Deserialize)]
 pub enum Command {
     Halt,
     Stop,
