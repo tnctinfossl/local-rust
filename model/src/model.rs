@@ -2,7 +2,7 @@ use glm::{distance, Vec2};
 use rand::Rng;
 use std::collections::HashMap;
 use std::time::{Duration, Instant};
-use serde_derive::{Deserialize, Serialize};
+//use serde_derive::{Deserialize, Serialize};
 #[derive(Debug, Clone)]
 pub struct Robot {
     pub id: u32,
@@ -101,7 +101,6 @@ impl Team {
         self.yellow_card = newer.yellow_card.or(self.yellow_card);
         self.goalie = newer.goalie.or(self.goalie);
     }
-
 }
 
 #[derive(Debug, Clone)]
@@ -124,8 +123,7 @@ impl Field {
             penalty_area_depth: 1200.0,
         }
     }
-    pub fn new_small() -> Field {glm = "0.2.3"
-    rand = "0.7.2"
+    pub fn new_small() -> Field {
         Field {
             infield: Vec2::new(9000.0, 6000.0),
             outfield: Vec2::new(10400.0, 7400.0),
@@ -141,12 +139,12 @@ impl Field {
             random.gen_range(-self.infield.x / 2.0, self.infield.x / 2.0),
             random.gen_range(-self.infield.y / 2.0, self.infield.y / 2.0),
         );
-        let angle = random.gen_range(0.0,std::f32::consts::PI*2.0);
-        Robot::new(id, position,angle,1.0)
+        let angle = random.gen_range(0.0, std::f32::consts::PI * 2.0);
+        Robot::new(id, position, angle, 1.0)
     }
 
-    pub fn allocate_ball_by_random<R: Rng + ?Sized>(&self,random: &mut R) -> Ball{
-         let position = Vec2::new(
+    pub fn allocate_ball_by_random<R: Rng + ?Sized>(&self, random: &mut R) -> Ball {
+        let position = Vec2::new(
             random.gen_range(-self.outfield.x / 2.0, self.outfield.x / 2.0),
             random.gen_range(-self.outfield.y / 2.0, self.outfield.y / 2.0),
         );
@@ -219,7 +217,7 @@ impl Default for World {
         }
     }
 }
-#[derive(Clone,Copy, Serialize, Deserialize)]
+#[derive(Clone, Copy)]
 pub struct MergeOptions {
     mergin: f32, //同一オブジェクトとみなす距離[mm]
     time_limit: Duration,
@@ -265,9 +263,12 @@ impl World {
         self.stage = newer.stage.or(self.stage);
         self.timestamp = now;
     }
-    pub fn alocate_random<R: Rng + ?Sized>(&mut self,random:&mut R,count:u32){
-        self.blues.robots=(0..count).map(|id:u32|{Box::new(self.field.allocate_robot_by_random(random,id))}).collect();
-        self.yellows.robots=(0..count).map(|id:u32|{Box::new(self.field.allocate_robot_by_random(random,id))}).collect();
-        
+    pub fn alocate_random<R: Rng + ?Sized>(&mut self, random: &mut R, count: u32) {
+        self.blues.robots = (0..count)
+            .map(|id: u32| Box::new(self.field.allocate_robot_by_random(random, id)))
+            .collect();
+        self.yellows.robots = (0..count)
+            .map(|id: u32| Box::new(self.field.allocate_robot_by_random(random, id)))
+            .collect();
     }
 }

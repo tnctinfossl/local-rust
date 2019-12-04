@@ -8,3 +8,5 @@ edition = "2018"
 
 [dependencies]
 speaker={path="speaker"}
+model={path="model"}
+vision={path="vision"}
