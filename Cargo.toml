@@ -10,3 +10,4 @@ edition = "2018"
 speaker={path="speaker"}
 model={path="model"}
 vision={path="vision"}
+ai={path="ai"}
