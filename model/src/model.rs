@@ -1,14 +1,15 @@
 use glm::{distance, Vec2};
 use rand::Rng;
+use serde_derive::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::time::{Duration, Instant};
-use serde_derive::{Deserialize, Serialize};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Robot {
     pub id: u32,
     pub position: Vec2,
     pub angle: f32,
+    #[serde(skip, default = "Instant::now")]
     pub time: Instant,
     pub confidence: f32,
     pub tags: HashMap<String, String>, //追加する
@@ -27,9 +28,10 @@ impl Robot {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub struct Ball {
     pub position: Vec2,
+    #[serde(skip, default = "Instant::now")]
     pub time: Instant, //追加する
     pub confidence: f32,
 }
@@ -43,7 +45,7 @@ impl Ball {
         }
     }
 }
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Team {
     pub robots: Vec<Box<Robot>>,
     pub name: Option<String>,
@@ -98,7 +100,7 @@ impl Team {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Field {
     pub infield: Vec2,
     pub outfield: Vec2,
@@ -149,14 +151,14 @@ impl Field {
 }
 
 #[allow(dead_code)]
-#[derive(Debug, Clone, Copy,Serialize,Deserialize)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub enum TeamColor {
     Blue,
     Yellow,
 }
 
 #[allow(dead_code)]
-#[derive(Debug, Clone, Copy,Serialize,Deserialize)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub enum Command {
     Halt,
     Stop,
@@ -171,7 +173,7 @@ pub enum Command {
     BallPlacement(TeamColor),
 }
 #[allow(dead_code)]
-#[derive(Debug, Clone, Copy,Serialize,Deserialize)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub enum Stage {
     NormalFirstHalfPre,
     NormalFirstHalf,
@@ -189,7 +191,7 @@ pub enum Stage {
     PostGame,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct World {
     pub balls: Vec<Box<Ball>>,
     pub blues: Team,
@@ -197,6 +199,7 @@ pub struct World {
     pub field: Field,
     pub command: Option<Command>,
     pub stage: Option<Stage>,
+    #[serde(skip, default = "Instant::now")]
     pub timestamp: Instant,
 }
 
@@ -213,12 +216,11 @@ impl Default for World {
         }
     }
 }
-#[derive(Clone, Copy,Serialize,Deserialize)]
+#[derive(Clone, Copy, Serialize, Deserialize)]
 pub struct MergeOptions {
     mergin: f32, //同一オブジェクトとみなす距離[mm]
     time_limit: Duration,
 }
-
 
 impl Default for MergeOptions {
     fn default() -> MergeOptions {

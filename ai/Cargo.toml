@@ -8,7 +8,7 @@ edition = "2018"
 
 [dependencies]
 model={path="../model"}
-glm = "0.2.3"
+glm = {git="https://github.com/tnctinfossl/glm-rs.git"}
 rand = "0.7.2"
 serde = "1.0.103"
 serde_json = "1.0.42"
