@@ -1,0 +1,5 @@
+
+#[derive()]
+pub struct Settings{
+
+}

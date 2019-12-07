@@ -11,3 +11,6 @@ speaker={path="speaker"}
 model={path="model"}
 vision={path="vision"}
 ai={path="ai"}
+serde = "1.0.103"
+serde_json = "1.0.44"
+serde_derive = "1.0.103"

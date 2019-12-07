@@ -2,7 +2,8 @@ use glm::{distance, Vec2};
 use rand::Rng;
 use std::collections::HashMap;
 use std::time::{Duration, Instant};
-//use serde_derive::{Deserialize, Serialize};
+use serde_derive::{Deserialize, Serialize};
+
 #[derive(Debug, Clone)]
 pub struct Robot {
     pub id: u32,
@@ -24,12 +25,6 @@ impl Robot {
             tags: HashMap::new(),
         }
     }
-    /*pub fn new_random<R: Rng + ?Sized>(rng: &mut R,id:u32,infield_width:f32,infield_hight:f32) -> Robot{
-        let x = rand::thread_rng().gen_range(0,1200);
-        let y = rand::thread_rng().gen_range(0,9000);
-        let mut robot = Robot{position:Vec2::new(0.0,0.0)};
-        robot.position =
-    }*/
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -112,6 +107,7 @@ pub struct Field {
     pub penalty_area_width: f32,
     pub penalty_area_depth: f32,
 }
+
 impl Field {
     pub fn new_large() -> Field {
         Field {
@@ -153,14 +149,14 @@ impl Field {
 }
 
 #[allow(dead_code)]
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy,Serialize,Deserialize)]
 pub enum TeamColor {
     Blue,
     Yellow,
 }
 
 #[allow(dead_code)]
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy,Serialize,Deserialize)]
 pub enum Command {
     Halt,
     Stop,
@@ -175,7 +171,7 @@ pub enum Command {
     BallPlacement(TeamColor),
 }
 #[allow(dead_code)]
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy,Serialize,Deserialize)]
 pub enum Stage {
     NormalFirstHalfPre,
     NormalFirstHalf,
@@ -217,11 +213,12 @@ impl Default for World {
         }
     }
 }
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy,Serialize,Deserialize)]
 pub struct MergeOptions {
     mergin: f32, //同一オブジェクトとみなす距離[mm]
     time_limit: Duration,
 }
+
 
 impl Default for MergeOptions {
     fn default() -> MergeOptions {
