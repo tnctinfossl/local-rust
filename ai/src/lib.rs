@@ -1,7 +1,9 @@
+extern crate glm;
+extern crate model;
 extern crate serde;
-extern crate serde_json;
 extern crate serde_derive;
+extern crate serde_json;
+
 pub mod process;
 pub use process::*;
-extern crate model;
-extern crate glm;
+pub mod objects;
