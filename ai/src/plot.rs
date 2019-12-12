@@ -5,11 +5,12 @@ pub trait Plotter<T> {
     fn plot(&mut self, targrt: &T);
 }
 
-impl Plotter<Situation> for Figure {
-    fn plot(&mut self, situation: &Situation) {
+impl Plotter<Scene> for Figure {
+    fn plot(&mut self, scene: &Scene) {
         let axes2d = self.axes2d();
+        let size = 2.0;
         //blue
-        let blues: Vec<_> = situation
+        let blues: Vec<_> = scene
             .robots
             .iter()
             .filter_map(|(k, v)| {
@@ -20,11 +21,21 @@ impl Plotter<Situation> for Figure {
                 }
             })
             .collect();
-        let blue_xs = blues.iter().map(|p| p.x);
-        let blue_ys = blues.iter().map(|p| p.y);
-        axes2d.points(blue_xs, blue_ys, &[PlotOption::Color("blue")]);
+        if blues.len() > 0 {
+            let blue_xs = blues.iter().map(|p| p.x);
+            let blue_ys = blues.iter().map(|p| p.y);
+            axes2d.points(
+                blue_xs,
+                blue_ys,
+                &[
+                    PlotOption::Color("blue"),
+                    PlotOption::PointSize(size),
+                    PlotOption::PointSymbol('O'),
+                ],
+            );
+        }
         //yellow
-        let yellows: Vec<_> = situation
+        let yellows: Vec<_> = scene
             .robots
             .iter()
             .filter_map(|(k, v)| {
@@ -35,16 +46,35 @@ impl Plotter<Situation> for Figure {
                 }
             })
             .collect();
-
-        let yellow_xs = yellows.iter().map(|p| p.x);
-        let yellow_ys = yellows.iter().map(|p| p.y);
-        axes2d.points(yellow_xs, yellow_ys, &[PlotOption::Color("orange")]);
+        if yellows.len() > 0 {
+            let yellow_xs = yellows.iter().map(|p| p.x);
+            let yellow_ys = yellows.iter().map(|p| p.y);
+            axes2d.points(
+                yellow_xs,
+                yellow_ys,
+                &[
+                    PlotOption::Color("orange"),
+                    PlotOption::PointSize(size),
+                    PlotOption::PointSymbol('O'),
+                ],
+            );
+        }
         //ball
-        let ball_xs = situation.balls.iter().map(|b| b.position.x);
-        let ball_ys = situation.balls.iter().map(|b| b.position.y);
-        axes2d.points(ball_xs, ball_ys, &[PlotOption::Color("red")]);
+        if scene.balls.len() > 0 {
+            let ball_xs = scene.balls.iter().map(|b| b.position.x);
+            let ball_ys = scene.balls.iter().map(|b| b.position.y);
+            axes2d.points(
+                ball_xs,
+                ball_ys,
+                &[
+                    PlotOption::Color("red"),
+                    PlotOption::PointSize(size),
+                    PlotOption::PointSymbol('O'),
+                ],
+            );
+        }
         //枠
-        let infield = situation.field.infield;
+        let infield = scene.field.infield;
         let rect_xs = [
             -infield.x / 2.0,
             infield.x / 2.0,
@@ -62,24 +92,51 @@ impl Plotter<Situation> for Figure {
         axes2d.lines(
             rect_xs.iter(),
             rect_ys.iter(),
-            &[PlotOption::Color("black")],
+            &[PlotOption::Color("black"), PlotOption::PointSize(size)],
         );
     }
 }
 
+impl Plotter<Robot> for Figure {
+    fn plot(&mut self, robot: &Robot) {
+        let axes2d = self.axes2d();
+        let size = 2.0;
+        axes2d.points(
+            [robot.position.x].iter(),
+            [robot.position.y].iter(),
+            &[
+                PlotOption::Color("gray"),
+                PlotOption::PointSize(size),
+                PlotOption::PointSymbol('o'),
+            ],
+        );
+    }
+}
 #[cfg(test)]
 mod test {
-
+    use super::super::vec2rad::*;
     use super::*;
     use std::fs;
     #[test]
-    fn test_plot() {
+    fn test_plot_scene() {
         let mut figure = Figure::new();
         let mut ramdom = rand::thread_rng();
         let field = Field::default();
-        let situation = Situation::new_ramdom(&mut ramdom, field, 10, 10, 1);
-        figure.plot(&situation);
+        let scene = Scene::new_ramdom(&mut ramdom, field, 10, 10, 1);
+        figure.plot(&scene);
         fs::create_dir_all("img").unwrap();
-        figure.save_to_png("img/test_plot.png", 1000, 1000).unwrap();
+        figure
+            .save_to_png("img/test_plot_scene.png", 1000, 1000)
+            .unwrap();
+    }
+    #[test]
+    fn test_plot_robot() {
+        let mut figure = Figure::new();
+        let robot = Robot::new(vec2rad(0.0, 0.0, 0.0));
+        figure.plot(&robot);
+        fs::create_dir_all("img").unwrap();
+        figure
+            .save_to_png("img/test_plot_robot.png", 1000, 1000)
+            .unwrap();
     }
 }

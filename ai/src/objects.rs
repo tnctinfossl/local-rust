@@ -11,7 +11,7 @@ pub enum RobotID {
     Blue(u32),
     Yellow(u32),
 }
-
+pub use RobotID::{Blue, Yellow};
 impl Not for RobotID {
     type Output = Self;
     fn not(self) -> Self {
@@ -131,15 +131,15 @@ impl RamdomReplace<Ball> for Field {
 }
 
 #[derive(Debug, Clone)]
-pub struct Situation {
+pub struct Scene {
     pub balls: Vec<Ball>,
     pub robots: HashMap<RobotID, Robot>,
     pub field: Field,
 }
 
-impl Situation {
-    pub fn new(field: Field) -> Situation {
-        Situation {
+impl Scene {
+    pub fn new(field: Field) -> Scene {
+        Scene {
             balls: vec![],
             robots: HashMap::new(),
             field: field,
@@ -152,14 +152,14 @@ impl Situation {
         blue: u32,
         yellow: u32,
         ball: u32,
-    ) -> Situation {
+    ) -> Scene {
         let robots = (0..blue)
             .map(|b| RobotID::Blue(b))
             .chain((0..yellow).map(|y| RobotID::Yellow(y)))
             .map(|id: RobotID| (id, field.ramdom_replace(ramdom)))
             .collect();
         let balls = (0..ball).map(|_| field.ramdom_replace(ramdom)).collect();
-        Situation {
+        Scene {
             balls: balls,
             robots: robots,
             field: field,

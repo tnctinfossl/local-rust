@@ -7,5 +7,6 @@ extern crate serde_json;
 pub mod process;
 pub use process::*;
 pub mod objects;
+pub mod planer;
 pub mod plot;
 pub mod vec2rad;
