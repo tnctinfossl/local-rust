@@ -5,9 +5,8 @@ pub trait Plotter<T> {
     fn plot(&mut self, targrt: &T);
 }
 
-impl Plotter<Scene> for Figure {
+impl Plotter<Scene> for Axes2D {
     fn plot(&mut self, scene: &Scene) {
-        let axes2d = self.axes2d();
         let size = 2.0;
         //blue
         let blues: Vec<_> = scene
@@ -24,7 +23,7 @@ impl Plotter<Scene> for Figure {
         if blues.len() > 0 {
             let blue_xs = blues.iter().map(|p| p.x);
             let blue_ys = blues.iter().map(|p| p.y);
-            axes2d.points(
+            self.points(
                 blue_xs,
                 blue_ys,
                 &[
@@ -49,7 +48,7 @@ impl Plotter<Scene> for Figure {
         if yellows.len() > 0 {
             let yellow_xs = yellows.iter().map(|p| p.x);
             let yellow_ys = yellows.iter().map(|p| p.y);
-            axes2d.points(
+            self.points(
                 yellow_xs,
                 yellow_ys,
                 &[
@@ -63,7 +62,7 @@ impl Plotter<Scene> for Figure {
         if scene.balls.len() > 0 {
             let ball_xs = scene.balls.iter().map(|b| b.position.x);
             let ball_ys = scene.balls.iter().map(|b| b.position.y);
-            axes2d.points(
+            self.points(
                 ball_xs,
                 ball_ys,
                 &[
@@ -89,7 +88,7 @@ impl Plotter<Scene> for Figure {
             infield.y / 2.0,
             -infield.y / 2.0,
         ];
-        axes2d.lines(
+        self.lines(
             rect_xs.iter(),
             rect_ys.iter(),
             &[PlotOption::Color("black"), PlotOption::PointSize(size)],
@@ -97,11 +96,10 @@ impl Plotter<Scene> for Figure {
     }
 }
 
-impl Plotter<Robot> for Figure {
+impl Plotter<Robot> for Axes2D {
     fn plot(&mut self, robot: &Robot) {
-        let axes2d = self.axes2d();
         let size = 2.0;
-        axes2d.points(
+        self.points(
             [robot.position.x].iter(),
             [robot.position.y].iter(),
             &[
@@ -123,7 +121,7 @@ mod test {
         let mut ramdom = rand::thread_rng();
         let field = Field::default();
         let scene = Scene::new_ramdom(&mut ramdom, field, 10, 10, 1);
-        figure.plot(&scene);
+        figure.axes2d().plot(&scene);
         fs::create_dir_all("img").unwrap();
         figure
             .save_to_png("img/test_plot_scene.png", 1000, 1000)
@@ -133,7 +131,7 @@ mod test {
     fn test_plot_robot() {
         let mut figure = Figure::new();
         let robot = Robot::new(vec2rad(0.0, 0.0, 0.0));
-        figure.plot(&robot);
+        figure.axes2d().plot(&robot);
         fs::create_dir_all("img").unwrap();
         figure
             .save_to_png("img/test_plot_robot.png", 1000, 1000)
