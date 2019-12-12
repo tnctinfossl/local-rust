@@ -10,5 +10,5 @@ edition = "2018"
 glm ={git= "https://github.com/tnctinfossl/glm-rs.git"}
 rand = "0.7.2"
 serde = "1.0.103"
-serde_json = "1.0.42"
+serde_json = "1.0.44"
 serde_derive = "1.0.103"

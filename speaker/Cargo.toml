@@ -7,9 +7,9 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-protobuf = "2.8.0"
+protobuf = "2.8.1"
 glm = {git="https://github.com/tnctinfossl/glm-rs"}
-serde = "1.0.101"
-serde_derive = "1.0.101"
+serde = "1.0.103"
+serde_derive = "1.0.103"
 [build-dependencies]
 protoc-rust = "2.8.1"
