@@ -4,9 +4,10 @@ use super::vec2rad::*;
 use glm::*;
 use serde_derive::*;
 //プラン作成時の制約条件
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub struct Limit {
     pub filed: Field,
+    pub period: f32,
     pub velocity: f32,     //速度の上限[m/s]
     pub acceleration: f32, //加速度の上限[m/s^2]
     pub avoid_radius: f32, //ロボットを避ける半径[m]
@@ -15,6 +16,7 @@ pub struct Limit {
 impl Default for Limit {
     fn default() -> Limit {
         Limit {
+            period: 1.0 / 60.0,
             filed: Field::default(),
             velocity: 1.0,
             acceleration: 1.0,
@@ -26,7 +28,6 @@ impl Default for Limit {
 pub trait Plan {
     fn plan(&self, time: f32) -> Vec2Rad;
     //開始時間は0であるため、自明
-    fn end_time(&self) -> f32; //終了時間
 }
 
 //障害物に構わず、直行する計画
@@ -48,12 +49,10 @@ impl DirectPlan {
 
 impl Plan for DirectPlan {
     fn plan(&self, time: f32) -> Vec2Rad {
-        self.begin + (self.end - self.begin) * (time / self.end_time())
-    }
-    fn end_time(&self) -> f32 {
-        let begin2d = self.begin.to_vec2();
-        let end2d = self.end.to_vec2();
-        distance(begin2d, end2d) / self.limit.velocity
+        //
+        let rate = self.limit.velocity * time / distance(self.begin.to_vec2(), self.end.to_vec2());
+        //let rate = time * d /  / self.limit.period;
+        self.begin + (self.end - self.begin) * rate
     }
 }
 
@@ -74,36 +73,23 @@ mod test {
 
     const period: f32 = 1.0 / 60.0; //制御周期[s]
 
-    fn demo_scene() -> Scene {
-        let mut scene = Scene::new(Field::default());
-        //自機
-        scene
-            .robots
-            .insert(Blue(0), Robot::new(vec2rad(1.0, 0.0, 0.0)));
-        //敵機
-        scene
-            .robots
-            .insert(Yellow(0), Robot::new(vec2rad(0.0, 0.0, 0.0)));
-        //目標地点
-        scene.balls.push(Ball::new(vec2(-1.0, 0.0)));
-        scene
-    }
-
     #[test]
     fn test_direct_plan() {
         let mut figure = Figure::new();
-        let mut scene = demo_scene();
+        let begin = Vec2Rad::new(3.0, 0.0, 0.0);
+        let end = Vec2Rad::new(-3.0, 0.0, 0.0);
         //計画の立案
         let limit = Limit::default();
-        let begin = scene.robots[&Blue(0)].position;
-        let end = Vec2Rad::from_vec2_rad(scene.balls[0].position, 0.0);
-        let planer = DirectPlan::new(limit, begin, end);
+        let mut scene = Scene::new(limit.filed);
+        scene.robots.insert(RobotID::Blue(0), Robot::new(begin));
+        scene.balls.push(Ball::new(end.to_vec2()));
+        let plan = DirectPlan::new(limit, begin, end);
         //計画の実行と記録
         let mut time = 0.0;
-        let mut record = vec![];
-        while time < planer.end_time() {
-            record.push(planer.plan(time));
-            time += period;
+        let mut record = Vec::new();
+        while distance(plan.plan(time).to_vec2(), end.to_vec2()) > 0.01 {
+            record.push(plan.plan(time));
+            time += limit.period;
         }
         println!("{:?}", record);
         //描画
