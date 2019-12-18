@@ -1,9 +1,9 @@
-use glm::vec2;
+//use glm::{vec2,Vec2};
 use glm::distance;
 use gnuplot::*;
 //use std::cmp::Ordering;
 //use std::io;
-//use glm::*;
+use glm::*;
 
 /*
 //二点a,bを通る線分と点pの距離
@@ -19,6 +19,15 @@ pub fn distance_segment_point((a, b): (Vec2, Vec2), p: Vec2) -> f32 {
     return distance_line_point((a, b), p);
 }
 */
+fn dodge_point(point1:f32,point2:f32,aa:Vec2,bb:Vec2) -> Vec2{
+    if point1 < point2{
+        println!("回避ポイント1");
+        return aa;
+    }else{
+        println!("回避ポイント2");
+        return bb;
+    }
+}
 
 fn distance_min_point(dis_up:f32,dis_down:f32,dis_right:f32,dis_left:f32) -> f32{
   
@@ -223,8 +232,8 @@ fn distance_min2_point(dis_up:f32,dis_down:f32,dis_right:f32,dis_left:f32) -> f3
 }
 
 fn main() {
-    let robot1 =vec2(-30.0,30.0); 
-    let robot2 =vec2(-15.0,15.0);
+    let robot1 =vec2(-15.0,20.0); 
+    let robot2 =vec2(-5.0,15.0);
     let ball =vec2(0.0,0.0);
 
     let mut figure = gnuplot::Figure::new();
@@ -236,7 +245,7 @@ fn main() {
     let ball_xs = [ball.x];
     let ball_ys = [ball.y];
     axes2d.points(&ball_xs,&ball_ys,&[PlotOption::Color("blue"),PlotOption::PointSize(5.0)]);
-
+    
     let r = 5.0;
     let points_xs = [robot2.x,robot2.x,robot2.x+r,robot2.x-r];
     let points_ys = [robot2.y+r,robot2.y-r,robot2.y,robot2.y];
@@ -246,23 +255,103 @@ fn main() {
     let points_down = vec2(robot2.x,robot2.y-r);
     let points_right = vec2(robot2.x+r,robot2.y);
     let points_left = vec2(robot2.x-r,robot2.y);
-    /*let dis_up = distance(robot1,points_up);
+    let dis_up = distance(robot1,points_up);
     let dis_down = distance(robot1,points_down);
     let dis_right = distance(robot1,points_right);
-    let dis_left = distance(robot1,points_left);*/
-
+    let dis_left = distance(robot1,points_left);
+/*
     let dis_up = 5.0;
     let dis_down = 4.0;
     let dis_right = 3.0;
-    let dis_left = 2.0;
+    let dis_left = 2.0;*/
+
 
     let a = distance_min_point(dis_up, dis_down, dis_right, dis_left);
     let b = distance_min2_point(dis_up, dis_down, dis_right, dis_left);
-    println!("{:?}{:?}",a,b);
 
+    let mut dis_ball1 = 0.0;
+    let mut dis_ball2 = 0.0;
+    let mut aa = vec2(0.0,0.0);
+    let mut bb = vec2(0.0,0.0);
+
+    if a == dis_up{
+        dis_ball1 = distance(ball,points_up);
+        aa = points_up;
+        if b == dis_down{
+            dis_ball2 = distance(ball,points_down);
+            bb = points_down;
+        }
+        else if b == dis_right{
+            dis_ball2 = distance(ball,points_right);
+            bb = points_right;
+        }
+        else if b == dis_left{
+            dis_ball2 = distance(ball,points_left);
+            bb = points_left;
+        }
+    }
+    else if a == dis_down{
+        dis_ball1 = distance(ball,points_down);
+        aa = points_down;
+        if b == dis_up{
+            dis_ball2 = distance(ball,points_up);
+            bb = points_up;
+        }
+        else if b == dis_right{
+            dis_ball2 = distance(ball,points_right);
+            bb = points_right;
+        }
+        else if b == dis_left{
+            dis_ball2 = distance(ball,points_left);
+            bb = points_left;
+        }
+    }
+    else if a == dis_right{
+        dis_ball1 = distance(ball,points_right);
+        aa = points_right;
+        if b == dis_up{
+            dis_ball2 = distance(ball,points_up);
+            bb = points_up;
+        }
+        else if b == dis_down{
+            dis_ball2 = distance(ball,points_down);
+            bb = points_down;
+        }
+        else if b == dis_left{
+            dis_ball2 = distance(ball,points_left);
+            bb = points_left;
+        }
+    }
+    else if a == dis_left{
+        dis_ball1 = distance(ball,points_left);
+        aa = points_left;
+        if b == dis_up{
+            dis_ball2 = distance(ball,points_up);
+            bb = points_up;
+        }
+        else if b == dis_right{
+            dis_ball2 = distance(ball,points_right);
+            bb = points_right;
+        }
+        else if b == dis_down{
+            dis_ball2 = distance(ball,points_down);
+            bb = points_down;
+        }
+    }else{
+        println!("aaa");
+    }
+
+    
+    let c = dodge_point(dis_ball1, dis_ball2,aa,bb);
+    
+    println!("{:?}",c);
+    let dodge_xs = [c.x];
+    let dodge_ys = [c.y];
+    axes2d.points(&dodge_xs,&dodge_ys,&[PlotOption::Color("green"),PlotOption::PointSize(5.0)]);
+ 
     axes2d.set_x_range(Fix(-40.0), Fix(10.0));
     axes2d.set_y_range(Fix(-10.0), Fix(40.0));
-    //figure.show();
+    figure.show();
 
     
     /*
