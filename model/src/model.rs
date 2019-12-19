@@ -2,7 +2,7 @@ use glm::{distance, Vec2};
 use rand::Rng;
 use std::collections::HashMap;
 use std::time::{Duration, Instant};
-//use serde_derive::{Deserialize, Serialize};
+use serde_derive::{Deserialize, Serialize};
 #[derive(Debug, Clone)]
 pub struct Robot {
     pub id: u32,
@@ -153,7 +153,7 @@ impl Field {
 }
 
 #[allow(dead_code)]
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy,Serialize,Deserialize)]
 pub enum TeamColor {
     Blue,
     Yellow,

@@ -16,7 +16,7 @@ impl Default for Settings {
     fn default() -> Settings {
         Settings {
             ip4: [224, 5, 23, 2],
-            port: 10020,
+            port: 10006,
         }
     }
 }

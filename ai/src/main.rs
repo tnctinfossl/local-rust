@@ -3,6 +3,7 @@ use glm::distance;
 use gnuplot::*;
 //use std::cmp::Ordering;
 //use std::io;
+use std::time::{Duration, Instant};
 use glm::*;
 
 /*
@@ -232,6 +233,7 @@ fn distance_min2_point(dis_up:f32,dis_down:f32,dis_right:f32,dis_left:f32) -> f3
 }
 
 fn main() {
+    let start = Instant::now();
     let robot1 =vec2(-15.0,20.0); 
     let robot2 =vec2(-5.0,15.0);
     let ball =vec2(0.0,0.0);
@@ -352,6 +354,9 @@ fn main() {
     axes2d.set_x_range(Fix(-40.0), Fix(10.0));
     axes2d.set_y_range(Fix(-10.0), Fix(40.0));
     figure.show();
+    let end = start.elapsed();
+    println!("{}.{:03}秒経過しました。", end.as_secs(), end.subsec_nanos() / 1_000_000);
+    
 
     
     /*
