@@ -26,7 +26,7 @@ impl Default for Settings {
     fn default() -> Settings {
         Settings {
             //ip4: [224, 5, 23, 2],
-            ip4:[127,0,0,1],
+            ip4: [127, 0, 0, 1],
             port: 20011,
         }
     }
@@ -123,11 +123,9 @@ pub struct Speaker {
 impl Speaker {
     pub fn new(settings: &Settings) -> io::Result<Speaker> {
         let socket = (UdpSocket::bind("localhost:0"))?;
-        socket.connect(SocketAddr::from((settings.ip4,settings.port)))?;
+        socket.connect(SocketAddr::from((settings.ip4, settings.port)))?;
         //socket.join_multicast_v4(&Ipv4Addr::from(settings.ip4),&Ipv4Addr::from([0,0,0,0]))?;
-        Ok(Speaker {
-            socket: socket
-        })
+        Ok(Speaker { socket: socket })
     }
     //注意:このメソッドはmulti-threadに対応していない。
     pub fn send(&self, op: &Operation) -> io::Result<()> {
