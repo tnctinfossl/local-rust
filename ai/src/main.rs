@@ -299,9 +299,9 @@ fn distance_min2_point(dis_up:f32,dis_down:f32,dis_right:f32,dis_left:f32) -> f3
 
 fn main() {
     let start = Instant::now(); //時間計測開始
-    let robot1 =vec2(-15.0,20.0); //移動するロボットの座標
+    let robot1 =vec2(-6.0,30.0); //移動するロボットの座標
     let robot2 =vec2(-5.0,15.0); //避ける対象のロボットの座標
-    let ball =vec2(0.0,0.0); //ボール(目的地)の座標
+    let ball =vec2(-10.0,5.0); //ボール(目的地)の座標
 
     //移動するロボットと避ける対象のロボットの描画
     let mut figure = gnuplot::Figure::new();
@@ -310,7 +310,7 @@ fn main() {
     let robot_ys = [robot1.y,robot2.y];
     axes2d.points(&robot_xs,&robot_ys,&[PlotOption::Color("red"),PlotOption::PointSize(5.0)]);
  
-    //ボールの描画
+    //ボール(目的地)の描画
     let ball_xs = [ball.x];
     let ball_ys = [ball.y];
     axes2d.points(&ball_xs,&ball_ys,&[PlotOption::Color("blue"),PlotOption::PointSize(5.0)]);
@@ -330,11 +330,6 @@ fn main() {
     let dis_down = distance(robot1,points_down);
     let dis_right = distance(robot1,points_right);
     let dis_left = distance(robot1,points_left);
-/*
-    let dis_up = 5.0;
-    let dis_down = 4.0;
-    let dis_right = 3.0;
-    let dis_left = 2.0;*/
 
 
     let a = distance_min_point(dis_up, dis_down, dis_right, dis_left);
@@ -422,20 +417,24 @@ fn main() {
     let dodge_ys = [c.y];
     axes2d.points(&dodge_xs,&dodge_ys,&[PlotOption::Color("green"),PlotOption::PointSize(5.0)]);
 
-   // let mx = next_pointx(robot1.x,c.x,ball.x,1.0);
-    //let my = next_pointy(robot1.y,c.y,ball.y,1.0);
+
 
     let delta = 1.0/60.0;
-    let sfx =spline(&[robot1.x,c.x,ball.x],delta);
-    let x =sfx(0.5*delta);
-    let sfy = spline(&[robot1.y,c.y,ball.y],delta);
-    let y = sfy(0.5*delta);
-    let xx = [x];
-    let yy = [y];
+    for x1 in 0..21 {
+        let y1 = x1 as f32;
+        let sfx =spline(&[robot1.x,c.x,ball.x],delta);
+        let x =sfx(0.1*y1*delta);
+        let sfy = spline(&[robot1.y,c.y,ball.y],delta);
+        let y = sfy(0.1*y1*delta);
+        let xx = [x];
+        let yy = [y];
+    
+    
+    
     println!("{}",x);
     println!("{}",y);
-    axes2d.points(&xx,&yy,&[PlotOption::Color("red"),PlotOption::PointSize(5.0)]);
-
+    axes2d.points(&xx,&yy,&[PlotOption::Color("red"),PlotOption::PointSize(1.0)]);
+    }
     //println!("{:?}",mx);
     //println!("{:?}",my);
     
